@@ -2,6 +2,13 @@ import { GetStaticProps } from "next";
 import { openDB } from "src/openDB";
 import { FaqModel } from "@/models/Faq";
 
+// Material UI
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 interface FaqProps {
   faq: FaqModel[];
 }
@@ -9,12 +16,24 @@ interface FaqProps {
 export default function Faq({ faq }: FaqProps) {
   return (
     <div>
+      <Typography gutterBottom variant="h4">
+        FAQ Page
+      </Typography>
+
       {faq.map(({ id, answer, question }) => (
-        <div key={id}>
-          <p>Q: {question}</p>
-          <p>A: {answer}</p>
-          <hr />
-        </div>
+        <ExpansionPanel key={id}>
+          <ExpansionPanelSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>{question}</Typography>
+          </ExpansionPanelSummary>
+
+          <ExpansionPanelDetails>
+            <Typography variant="body2">{answer}</Typography>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       ))}
     </div>
   );

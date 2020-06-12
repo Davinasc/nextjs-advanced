@@ -32,7 +32,7 @@ export default class MyApp extends App {
           <CssBaseline />
 
           <Container>
-            <Box marginTop={14}>
+            <Box marginTop={10}>
               <Layout>
                 <Component {...pageProps} />
               </Layout>
