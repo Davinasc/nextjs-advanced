@@ -17,7 +17,9 @@
     "paths": {
       "@/models/*": ["models/*"],
       "@/styles/*": ["src/styles/*"],
-      "@/containers/*": ["src/containers/*"]
+      "@/containers/*": ["src/containers/*"],
+      "@/database/*": ["src/database/*"],
+      "@/utils/*": ["src/utils/*"]
     }
   },
   "exclude": ["node_modules"],

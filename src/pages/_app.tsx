@@ -1,6 +1,8 @@
 import App from "next/app";
 import Head from "next/head";
 import theme from "@/styles/theme";
+import axios from "axios";
+import { SWRConfig } from "swr";
 
 // Material UI
 import { ThemeProvider } from "@material-ui/core/styles";
@@ -31,13 +33,15 @@ export default class MyApp extends App {
         <ThemeProvider theme={theme}>
           <CssBaseline />
 
-          <Container>
-            <Box marginTop={10}>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </Box>
-          </Container>
+          <SWRConfig value={{ fetcher: (url: string) => axios(url).then((res) => res.data) }}>
+            <Container>
+              <Box marginTop={10}>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </Box>
+            </Container>
+          </SWRConfig>
         </ThemeProvider>
       </>
     );
