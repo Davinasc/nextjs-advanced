@@ -19,7 +19,8 @@
       "@/styles/*": ["src/styles/*"],
       "@/containers/*": ["src/containers/*"],
       "@/database/*": ["src/database/*"],
-      "@/utils/*": ["src/utils/*"]
+      "@/utils/*": ["src/utils/*"],
+      "@/pages/*": ["src/pages/*"]
     }
   },
   "exclude": ["node_modules"],
