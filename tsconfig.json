@@ -20,7 +20,8 @@
       "@/containers/*": ["src/containers/*"],
       "@/database/*": ["src/database/*"],
       "@/utils/*": ["src/utils/*"],
-      "@/pages/*": ["src/pages/*"]
+      "@/pages/*": ["src/pages/*"],
+      "@/components/*": ["src/components/*"]
     }
   },
   "exclude": ["node_modules"],

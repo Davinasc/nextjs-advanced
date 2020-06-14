@@ -26,7 +26,7 @@ export default class MyApp extends App {
     return (
       <>
         <Head>
-          <title>Nextjs - SSG</title>
+          <title>Nextjs - Advanced</title>
           <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         </Head>
 

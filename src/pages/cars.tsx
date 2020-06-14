@@ -1,11 +1,20 @@
-import { GetServerSideProps } from "next";
+import { useState } from "react";
 import Link from "next/link";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
-import { getMakes, Make } from "../database/getMakes";
-import { getModels, Model } from "../database/getModels";
-import { getPaginatedCars } from "../database/getPaginatedCars";
+import { stringify } from "querystring";
+import useSWR from "swr";
+import deepEqual from "fast-deep-equal";
+
+import { getMakes, Make } from "@/database/getMakes";
+import { getModels, Model } from "@/database/getModels";
+import { getPaginatedCars } from "@/database/getPaginatedCars";
 import { getAsString } from "@/utils/getAsString";
+import { CarModel } from "@/models/Car";
+import { CarCard } from "@/components/car/CarCard";
+import { CarPagination } from "@/components/car/CarPagination";
+
+// Custom Components
 import Search from ".";
 
 // Material UI
@@ -21,52 +30,50 @@ export interface CarsListProps {
   totalPages: number;
 }
 
-export interface MaterialUiLinkProps {
-  item: PaginationRenderItemParams;
-  query: ParsedUrlQuery;
-}
-
-export function MaterialUiLink({ item, query, ...props }: MaterialUiLinkProps) {
-  return (
-    <Link href={{ pathname: "/cars", query: { ...query, page: item.page } }}>
-      <a {...props}></a>
-    </Link>
-  );
-}
-
 export default function CarsList({ makes, models, cars, totalPages }: CarsListProps) {
   const { query } = useRouter();
+  const [serverQuery] = useState(query);
+
+  const { data } = useSWR(`/api/cars?${stringify(query)}`, {
+    dedupingInterval: 15000,
+    initialData: deepEqual(query, serverQuery) ? { cars, totalPages } : undefined,
+  });
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={5} md={3}>
         <Search singleColumn makes={makes} models={models} />
       </Grid>
 
-      <Grid item xs={12} sm={7} md={9}>
-        <pre style={{ fontSize: "3rem" }}>
-          <Pagination
-            page={parseInt(getAsString(query.page) || "1")}
-            count={totalPages}
-            renderItem={(item) => (
-              <PaginationItem component={MaterialUiLink} query={query} item={item} {...item} />
-            )}
-          />
+      <Grid container item xs={12} sm={7} md={9} spacing={3}>
+        <Grid item xs={12}>
+          <CarPagination totalPages={data?.totalPages || 0} />
+        </Grid>
 
-          {JSON.stringify({ totalPages, cars }, null, 4)}
-        </pre>
+        {(data?.cars || []).map((car) => (
+          <Grid key={car.id} item xs={12} md={6}>
+            <CarCard car={car} />
+          </Grid>
+        ))}
+
+        <Grid item xs={12}>
+          <CarPagination totalPages={data?.totalPages || 0} />
+        </Grid>
       </Grid>
     </Grid>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const make = getAsString(ctx.query.make);
+export const getServerSideProps: GetServerSideProps<CarsListProps> = async (ctx) => {
+  const make = getAsString(ctx.query.make || "");
 
-  const [makes, models, pagination] = await Promise.all([
+  const [makes, models, { cars, totalPages }] = await Promise.all([
     getMakes(),
     getModels(make),
     getPaginatedCars(ctx.query),
   ]);
 
-  return { props: { makes, models, cars: pagination.cars, totalPages: pagination.totalPages } };
+  return {
+    props: { makes, models, cars, totalPages },
+  };
 };
